@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   title: "tomato.tools — Personal tool portal",
   description:
     "tomato が個人で作ったツール（Meeting Transcriber / WhisperWin / keyprobe）をまとめたポータル。",
-  metadataBase: new URL("https://tomato-tools.vercel.app"),
+  metadataBase: new URL("https://myprojects-portal.vercel.app"),
   openGraph: {
     title: "tomato.tools",
     description:
