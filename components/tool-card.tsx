@@ -1,9 +1,5 @@
-import {
-  ArrowUpRight,
-  BookOpen,
-  Download,
-  ExternalLink,
-} from "lucide-react";
+import Link from "next/link";
+import { ArrowUpRight, BookOpen, Download, ExternalLink, KeySquare } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,12 +11,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { DownloadModal } from "@/components/download-modal";
 import { GithubMark } from "@/components/icons/github";
 import { ToolIcon } from "@/components/tool-icon";
 import type { ActionKind, Tool } from "@/lib/tools";
 
 const kindIcon: Record<ActionKind, React.ComponentType<{ className?: string }>> = {
-  open: ExternalLink,
+  use: KeySquare,
   download: Download,
   docs: BookOpen,
   github: GithubMark,
@@ -29,7 +26,6 @@ const kindIcon: Record<ActionKind, React.ComponentType<{ className?: string }>> 
 type Props = { tool: Tool };
 
 export function ToolCard({ tool }: Props) {
-  const PrimaryIcon = kindIcon[tool.primary.kind];
   const SecondaryIcon = kindIcon[tool.secondary.kind];
 
   return (
@@ -75,17 +71,7 @@ export function ToolCard({ tool }: Props) {
       </CardContent>
 
       <CardFooter className="!rounded-none !border-0 !bg-transparent flex items-center gap-2 px-0 pt-2">
-        <Button asChild size="lg" className="flex-1">
-          <a
-            href={tool.primary.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`${tool.name}: ${tool.primary.label}`}
-          >
-            <PrimaryIcon className="size-4" />
-            {tool.primary.label}
-          </a>
-        </Button>
+        <PrimaryAction tool={tool} />
         <Button
           asChild
           size="lg"
@@ -93,7 +79,7 @@ export function ToolCard({ tool }: Props) {
           aria-label={`${tool.name} の ${tool.secondary.label} を開く`}
         >
           <a
-            href={tool.secondary.href}
+            href={"href" in tool.secondary ? tool.secondary.href : "#"}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -105,5 +91,42 @@ export function ToolCard({ tool }: Props) {
         </Button>
       </CardFooter>
     </Card>
+  );
+}
+
+function PrimaryAction({ tool }: { tool: Tool }) {
+  const a = tool.primary;
+  if (a.kind === "use") {
+    return (
+      <Button asChild size="lg" className="flex-1">
+        <Link href={`/use/${a.tool}`} aria-label={`${tool.name}: ${a.label}`}>
+          <KeySquare className="size-4" />
+          {a.label}
+        </Link>
+      </Button>
+    );
+  }
+  if (a.kind === "download") {
+    return (
+      <DownloadModal triggerLabel={a.label} triggerClassName="flex-1" />
+    );
+  }
+  // docs / github (fallback for future)
+  return (
+    <Button asChild size="lg" className="flex-1">
+      <a
+        href={a.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`${tool.name}: ${a.label}`}
+      >
+        {a.kind === "github" ? (
+          <GithubMark className="size-4" />
+        ) : (
+          <BookOpen className="size-4" />
+        )}
+        {a.label}
+      </a>
+    </Button>
   );
 }
