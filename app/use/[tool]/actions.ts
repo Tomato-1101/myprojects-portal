@@ -25,11 +25,15 @@ function urlFor(tool: ToolId): string | undefined {
 
 async function getIp(): Promise<string> {
   const h = await headers();
-  return (
-    h.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    h.get("x-real-ip") ??
-    "unknown"
-  );
+  // Vercel が常にセットする `x-real-ip` / `x-vercel-forwarded-for` を優先。
+  // 標準の `x-forwarded-for` はクライアント側で詐称しうるので最後の手段にする。
+  const real = h.get("x-real-ip");
+  if (real) return real.trim();
+  const vercel = h.get("x-vercel-forwarded-for");
+  if (vercel) return vercel.split(",")[0].trim();
+  const fwd = h.get("x-forwarded-for");
+  if (fwd) return fwd.split(",")[0].trim();
+  return "unknown";
 }
 
 export type VerifyState = {
