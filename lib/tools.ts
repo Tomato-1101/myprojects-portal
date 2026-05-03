@@ -1,17 +1,16 @@
-export type ActionKind = "open" | "download" | "docs" | "github";
+export type ActionKind = "use" | "download" | "docs" | "github";
 
 export type ToolIcon =
   | { type: "image"; src: string; alt: string }
   | { type: "lucide"; name: "KeyRound" | "Mic" | "FileAudio" };
 
-export type Action = {
-  label: string;
-  href: string;
-  kind: ActionKind;
-};
+export type Action =
+  | { kind: "use"; tool: "meeting-transcriber" | "keyprobe"; label: string }
+  | { kind: "download"; label: string }
+  | { kind: "docs" | "github"; label: string; href: string };
 
 export type Tool = {
-  id: "meeting-transcriber" | "whisperwin" | "keyprobe";
+  id: "meeting-transcriber" | "voicekey" | "keyprobe";
   name: string;
   tagline: string;
   description: string;
@@ -35,37 +34,36 @@ export const tools: Tool[] = [
     },
     tech: ["React 19", "FastAPI", "Whisper / Gemini"],
     primary: {
-      label: "ローカル起動手順を見る",
-      href: "https://github.com/Tomato-1101/meeting-transcriber#readme",
-      kind: "docs",
+      kind: "use",
+      tool: "meeting-transcriber",
+      label: "使う",
     },
     secondary: {
+      kind: "github",
       label: "GitHub",
       href: "https://github.com/Tomato-1101/meeting-transcriber",
-      kind: "github",
     },
   },
   {
-    id: "whisperwin",
-    name: "WhisperWin",
+    id: "voicekey",
+    name: "Voicekey",
     tagline: "ホットキー音声入力（Win / Mac）",
     description:
       "ホットキー1つで音声を録音 → 文字起こしし、アクティブウィンドウへ自動入力するデスクトップ常駐アプリ。Silero VAD で無音をスキップ。",
     icon: {
       type: "image",
-      src: "/icons/whisperwin.png",
-      alt: "WhisperWin",
+      src: "/icons/voicekey.png",
+      alt: "Voicekey",
     },
     tech: ["Python", "PySide6", "OpenAI / Groq"],
     primary: {
-      label: "ダウンロード手順を見る",
-      href: "https://github.com/Tomato-1101/WhisperWin#readme",
       kind: "download",
+      label: "ダウンロード",
     },
     secondary: {
-      label: "GitHub",
-      href: "https://github.com/Tomato-1101/WhisperWin",
       kind: "github",
+      label: "GitHub",
+      href: "https://github.com/Tomato-1101/voicekey",
     },
   },
   {
@@ -73,18 +71,18 @@ export const tools: Tool[] = [
     name: "keyprobe",
     tagline: "API キー検出＋残高チェック",
     description:
-      "汚いテキストから AI 系 API キーを正規表現で検出し、各プロバイダの残高を並列照会して USD 換算でランキング表示するローカル専用 Web。",
+      "汚いテキストから AI 系 API キーを正規表現で検出し、各プロバイダの残高を並列照会して USD 換算でランキング表示する。",
     icon: { type: "lucide", name: "KeyRound" },
     tech: ["Python", "FastAPI", "httpx"],
     primary: {
-      label: "ローカル起動手順を見る",
-      href: "https://github.com/Tomato-1101/keyprobe#readme",
-      kind: "docs",
+      kind: "use",
+      tool: "keyprobe",
+      label: "使う",
     },
     secondary: {
+      kind: "github",
       label: "GitHub",
       href: "https://github.com/Tomato-1101/keyprobe",
-      kind: "github",
     },
   },
 ];
