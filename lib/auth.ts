@@ -29,14 +29,37 @@ export function verifyPasswordConstantTime(input: string, expected: string): boo
 }
 
 type Bucket = { count: number; lockedUntil: number };
-const RATE: Map<string, Bucket> = (globalThis as unknown as { __rateLimit?: Map<string, Bucket> }).__rateLimit ?? new Map();
-(globalThis as unknown as { __rateLimit?: Map<string, Bucket> }).__rateLimit = RATE;
+type GlobalBucket = { fails: number; windowStart: number };
+
+// Note: globalThis 経由なので同一 Vercel function インスタンス内では永続。
+// インスタンス間（cold start, リージョン分散）では共有されないが、
+// PORTAL_PASSWORD は十分長くしてあるので緩いブルートフォース耐性で十分。
+// 厳密に守りたければ Vercel KV / Upstash に移す（現状はスコープ外）。
+const STORE = (globalThis as unknown as {
+  __rateLimit?: Map<string, Bucket>;
+  __rateLimitGlobal?: GlobalBucket;
+});
+const RATE: Map<string, Bucket> = STORE.__rateLimit ?? new Map();
+STORE.__rateLimit = RATE;
+const GLOBAL: GlobalBucket = STORE.__rateLimitGlobal ?? { fails: 0, windowStart: Date.now() };
+STORE.__rateLimitGlobal = GLOBAL;
 
 const MAX_FAILS = 5;
 const LOCK_MS = 30 * 60 * 1000;
+// 全 IP 合算でこの試行数を超えたら全リクエストを一旦ロック（分散ブルートフォース対策）
+const GLOBAL_MAX_FAILS = 50;
+const GLOBAL_WINDOW_MS = 30 * 60 * 1000;
 
 export function checkRate(ip: string): { ok: true } | { ok: false; retryAfterMs: number } {
   const now = Date.now();
+  // global window のリセット
+  if (now - GLOBAL.windowStart > GLOBAL_WINDOW_MS) {
+    GLOBAL.windowStart = now;
+    GLOBAL.fails = 0;
+  }
+  if (GLOBAL.fails >= GLOBAL_MAX_FAILS) {
+    return { ok: false, retryAfterMs: GLOBAL_WINDOW_MS - (now - GLOBAL.windowStart) };
+  }
   const b = RATE.get(ip);
   if (b && b.lockedUntil > now) return { ok: false, retryAfterMs: b.lockedUntil - now };
   return { ok: true };
@@ -51,6 +74,11 @@ export function recordFail(ip: string): void {
     b.count = 0;
   }
   RATE.set(ip, b);
+  if (now - GLOBAL.windowStart > GLOBAL_WINDOW_MS) {
+    GLOBAL.windowStart = now;
+    GLOBAL.fails = 0;
+  }
+  GLOBAL.fails += 1;
 }
 
 export function recordSuccess(ip: string): void {
