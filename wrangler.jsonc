@@ -1,0 +1,12 @@
+{
+  // Next.js（Server Actions あり）を @opennextjs/cloudflare 経由で配信。
+  // Vercel から移行 2026-08-15。ビルドは `npm run deploy:cf` を使う
+  "name": "myprojects-portal",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-08-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  }
+}

@@ -25,8 +25,12 @@ function urlFor(tool: ToolId): string | undefined {
 
 async function getIp(): Promise<string> {
   const h = await headers();
-  // Vercel が常にセットする `x-real-ip` / `x-vercel-forwarded-for` を優先。
-  // 標準の `x-forwarded-for` はクライアント側で詐称しうるので最後の手段にする。
+  // ホスティング側がエッジで必ず付け替えるヘッダを優先する（詐称できないため）。
+  // Cloudflare Workers は `cf-connecting-ip`、Vercel は `x-real-ip` /
+  // `x-vercel-forwarded-for`。標準の `x-forwarded-for` はクライアント側で
+  // 詐称しうるので最後の手段にする。
+  const cf = h.get("cf-connecting-ip");
+  if (cf) return cf.trim();
   const real = h.get("x-real-ip");
   if (real) return real.trim();
   const vercel = h.get("x-vercel-forwarded-for");
