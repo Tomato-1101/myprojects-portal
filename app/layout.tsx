@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   title: "tomato.tools — Personal tool portal",
   description:
     "tomato が個人で作ったツール（Meeting Transcriber / WhisperWin / keyprobe）をまとめたポータル。",
-  metadataBase: new URL("https://myprojects-portal.vercel.app"),
+  metadataBase: new URL("https://myprojects-portal.zhaounhaku.workers.dev"),
   openGraph: {
     title: "tomato.tools",
     description:
@@ -43,13 +43,7 @@ export default function RootLayout({
       className={`dark ${inter.variable} ${notoSansJP.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
-      <body
-        className="min-h-dvh font-sans"
-        style={{
-          fontFamily:
-            "var(--font-inter), var(--font-noto-jp), system-ui, sans-serif",
-        }}
-      >
+      <body className="min-h-dvh font-sans">
         {children}
       </body>
     </html>

@@ -64,7 +64,7 @@ export default function Home() {
       <footer className="mx-auto w-full max-w-6xl px-6 pb-10">
         <div className="flex flex-col items-start justify-between gap-3 border-t border-foreground/10 pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center">
           <span>
-            Built with Next.js + shadcn/ui · Deployed on Vercel
+            Built with Next.js + shadcn/ui · Deployed on Cloudflare
           </span>
           <span className="font-mono">
             © {new Date().getFullYear()} tomato

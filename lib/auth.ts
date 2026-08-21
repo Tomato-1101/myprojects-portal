@@ -1,4 +1,4 @@
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 
 export type ToolId = "meeting-transcriber" | "keyprobe";
 
@@ -22,13 +22,14 @@ export function signToken(tool: ToolId): { t: string; s: string } {
 }
 
 export function verifyPasswordConstantTime(input: string, expected: string): boolean {
-  const a = Buffer.from(input, "utf8");
-  const b = Buffer.from(expected, "utf8");
-  if (a.length !== b.length) return false;
+  // 長さ不一致での早期 return は応答時間からパスワード長が漏れるため、
+  // 両者を固定長ハッシュに落としてから比較する（長さ情報も消える）
+  const a = createHash("sha256").update(input, "utf8").digest();
+  const b = createHash("sha256").update(expected, "utf8").digest();
   return timingSafeEqual(a, b);
 }
 
-type Bucket = { count: number; lockedUntil: number };
+type Bucket = { count: number; lockedUntil: number; updatedAt: number };
 type GlobalBucket = { fails: number; windowStart: number };
 
 // Note: globalThis 経由なので同一 Vercel function インスタンス内では永続。
@@ -67,7 +68,15 @@ export function checkRate(ip: string): { ok: true } | { ok: false; retryAfterMs:
 
 export function recordFail(ip: string): void {
   const now = Date.now();
-  const b = RATE.get(ip) ?? { count: 0, lockedUntil: 0 };
+  // 失敗だけして去った IP のエントリは recordSuccess で消えず溜まり続けるため、
+  // 一定サイズを超えたら期限切れ分を掃除する（長寿命 isolate でのメモリ単調増加対策）
+  if (RATE.size > 500) {
+    for (const [k, v] of RATE) {
+      if (v.lockedUntil < now && now - v.updatedAt > LOCK_MS) RATE.delete(k);
+    }
+  }
+  const b = RATE.get(ip) ?? { count: 0, lockedUntil: 0, updatedAt: now };
+  b.updatedAt = now;
   b.count += 1;
   if (b.count >= MAX_FAILS) {
     b.lockedUntil = now + LOCK_MS;
