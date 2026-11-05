@@ -2,7 +2,7 @@
 
 ## 目的
 
-tomato が個人で作ったツール（voicekey / Meeting Transcriber / keyprobe 等）を 1 か所に集めた
+tomato が個人で作ったツール（voicekey / keyprobe 等）を 1 か所に集めた
 ポータルサイト。「ブラウザでそのまま使う / OS 別バイナリをダウンロードする」ための入口を提供する。
 公開 URL: https://myprojects-portal.zhaounhaku.workers.dev（Cloudflare Workers。2026-08-15 に Vercel から移行）。
 

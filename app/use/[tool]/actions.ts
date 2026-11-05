@@ -13,12 +13,10 @@ import {
 } from "@/lib/auth";
 
 const TOOL_LABELS: Record<ToolId, string> = {
-  "meeting-transcriber": "Meeting Transcriber",
   keyprobe: "keyprobe",
 };
 
 function urlFor(tool: ToolId): string | undefined {
-  if (tool === "meeting-transcriber") return process.env.MEETING_TRANSCRIBER_URL;
   if (tool === "keyprobe") return process.env.KEYPROBE_URL;
   return undefined;
 }

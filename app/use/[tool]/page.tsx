@@ -3,10 +3,6 @@ import { notFound } from "next/navigation";
 import { PasswordGate } from "./password-gate";
 
 const TOOL_LABELS = {
-  "meeting-transcriber": {
-    name: "Meeting Transcriber",
-    note: "音声ファイルをアップロードして文字起こしと AI 処理を行う Web アプリです。",
-  },
   keyprobe: {
     name: "keyprobe",
     note: "API キー検出と残高チェックのローカル専用ツール。tomato 個人用ロックです。",

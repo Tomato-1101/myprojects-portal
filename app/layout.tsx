@@ -24,12 +24,12 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "tomato.tools — Personal tool portal",
   description:
-    "tomato が個人で作ったツール（Meeting Transcriber / WhisperWin / keyprobe）をまとめたポータル。",
+    "tomato が個人で作ったツール（WhisperWin / keyprobe）をまとめたポータル。",
   metadataBase: new URL("https://myprojects-portal.zhaounhaku.workers.dev"),
   openGraph: {
     title: "tomato.tools",
     description:
-      "tomato が個人で作ったツール（Meeting Transcriber / WhisperWin / keyprobe）をまとめたポータル。",
+      "tomato が個人で作ったツール（WhisperWin / keyprobe）をまとめたポータル。",
     type: "website",
   },
 };

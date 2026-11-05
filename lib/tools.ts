@@ -5,12 +5,12 @@ export type ToolIcon =
   | { type: "lucide"; name: "KeyRound" | "Mic" | "FileAudio" };
 
 export type Action =
-  | { kind: "use"; tool: "meeting-transcriber" | "keyprobe"; label: string }
+  | { kind: "use"; tool: "keyprobe"; label: string }
   | { kind: "download"; label: string }
   | { kind: "docs" | "github"; label: string; href: string };
 
 export type Tool = {
-  id: "meeting-transcriber" | "voicekey" | "keyprobe";
+  id: "voicekey" | "keyprobe";
   name: string;
   tagline: string;
   description: string;
@@ -21,29 +21,6 @@ export type Tool = {
 };
 
 export const tools: Tool[] = [
-  {
-    id: "meeting-transcriber",
-    name: "Meeting Transcriber",
-    tagline: "会議音声を文字起こし＋AI要約",
-    description:
-      "音声ファイルを GPT-4o / Gemini で高精度に文字起こしし、要約・アクション抽出・チャットまで一気通貫で行える Web アプリ。",
-    icon: {
-      type: "image",
-      src: "/icons/meeting-transcriber.svg",
-      alt: "Meeting Transcriber",
-    },
-    tech: ["React 19", "FastAPI", "Whisper / Gemini"],
-    primary: {
-      kind: "use",
-      tool: "meeting-transcriber",
-      label: "使う",
-    },
-    secondary: {
-      kind: "github",
-      label: "GitHub",
-      href: "https://github.com/Tomato-1101/meeting-transcriber",
-    },
-  },
   {
     id: "voicekey",
     name: "Voicekey",
